@@ -25,20 +25,23 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getProjectById(id));
     }
 
+//    @GetMapping
+//    public ResponseEntity<Page<ProjectDTO>> getAllProjects(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return ResponseEntity.ok(projectService.getAllProjects(pageable));
+//    }
+
     @GetMapping
     public ResponseEntity<Page<ProjectDTO>> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(projectService.getAllProjects(pageable));
-    }
-
-    @GetMapping("/sorted-by-deadline")
-    public ResponseEntity<Page<ProjectDTO>> getAllProjectsSortedByDeadline(
-            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "deadline") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+            @RequestParam(defaultValue = "deadline") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(projectService.getAllProjects(pageable));
     }
 

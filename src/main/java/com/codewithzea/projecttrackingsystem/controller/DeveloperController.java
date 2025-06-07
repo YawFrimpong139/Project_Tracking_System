@@ -27,28 +27,32 @@ public class DeveloperController {
     @GetMapping
     public ResponseEntity<Page<DeveloperDTO>> getAllDevelopers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(developerService.getAllDevelopers(pageable));
-    }
-    @GetMapping("/sorted-by-id")
-    public ResponseEntity<Page<DeveloperDTO>> getAllSortedDevelopersById(
-            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(developerService.getAllDevelopers(pageable));
     }
+//    @GetMapping("/sorted-by-id")
+//    public ResponseEntity<Page<DeveloperDTO>> getAllSortedDevelopersById(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "id") String sortBy) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+//        return ResponseEntity.ok(developerService.getAllDevelopers(pageable));
+//    }
 
 
-    @GetMapping("/sorted-by-name")
-    public ResponseEntity<Page<DeveloperDTO>> getAllSortedDevelopersByName(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return ResponseEntity.ok(developerService.getAllDevelopers(pageable));
-    }
+//    @GetMapping("/sorted-by-name")
+//    public ResponseEntity<Page<DeveloperDTO>> getAllSortedDevelopersByName(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "name") String sortBy) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+//        return ResponseEntity.ok(developerService.getAllDevelopers(pageable));
+//    }
 
     @PostMapping
     public ResponseEntity<DeveloperDTO> createDeveloper(@Valid @RequestBody DeveloperDTO dto) throws Exception {
