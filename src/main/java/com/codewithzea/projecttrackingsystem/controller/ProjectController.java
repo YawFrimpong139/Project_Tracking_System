@@ -11,7 +11,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/projects")
@@ -28,27 +28,23 @@ public class ProjectController {
     @GetMapping
     public ResponseEntity<Page<ProjectDTO>> getAllProjects(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(projectService.getAllProjects(pageable));
-    }
-
-    @GetMapping("/sorted-by-deadline")
-    public ResponseEntity<Page<ProjectDTO>> getAllProjectsSortedByDeadline(
-            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "deadline") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+            @RequestParam(defaultValue = "deadline") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(projectService.getAllProjects(pageable));
     }
 
     @PostMapping
-    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectDTO dto) throws Exception {
-        return ResponseEntity.ok(projectService.createProject(dto));
+    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody ProjectDTO dto) {
+        ProjectDTO created = projectService.createProject(dto);
+        return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @Valid @RequestBody ProjectDTO dto) throws Exception {
+    public ResponseEntity<ProjectDTO> updateProject(@PathVariable Long id, @Valid @RequestBody ProjectDTO dto) {
         return ResponseEntity.ok(projectService.updateProject(id, dto));
     }
 
@@ -59,8 +55,14 @@ public class ProjectController {
     }
 
     @GetMapping("/without-tasks")
-    public ResponseEntity<List<ProjectDTO>> getProjectsWithoutTasks() {
-        return ResponseEntity.ok(projectService.findProjectsWithoutTasks());
+    public ResponseEntity<Page<ProjectDTO>> getProjectsWithoutTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(projectService.findProjectsWithoutTasks(pageable));
     }
 }
-

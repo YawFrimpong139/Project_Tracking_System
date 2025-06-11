@@ -23,8 +23,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByDeveloperId(@Param("developerId") Long developerId);
 
     // Find overdue tasks
-    @Query("SELECT t FROM Task t WHERE t.dueDate < CURRENT_DATE AND t.status <> 'DONE'")
-    List<Task> findOverdueTasks();
+    @Query("SELECT t FROM Task t WHERE t.dueDate < :currentDate AND t.status <> 'COMPLETED'")
+    List<Task> findOverdueTasks(@Param("currentDate") LocalDate currentDate);
 
     // Task counts grouped by status
     @Query("SELECT t.status as status, COUNT(t) as count FROM Task t GROUP BY t.status")

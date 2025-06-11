@@ -32,10 +32,9 @@ public class TaskController {
             @RequestParam(defaultValue = "dueDate") String sortBy,
             @RequestParam(defaultValue = "asc") String direction
     ) {
-        Sort sort = direction.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        return ResponseEntity.ok(taskService.getALlTasks(pageable));
+        return ResponseEntity.ok(taskService.getAllTasks(pageable));
     }
 
     @GetMapping("/{id}")
@@ -44,12 +43,12 @@ public class TaskController {
     }
 
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<TaskDTO>> getTasksByProjectId(@PathVariable Long projectId) {
+    public ResponseEntity<List<TaskDTO>> getTasksByProject(@PathVariable Long projectId) {
         return ResponseEntity.ok(taskService.getTasksByProjectId(projectId));
     }
 
     @GetMapping("/developer/{developerId}")
-    public ResponseEntity<List<TaskDTO>> getTasksByDeveloperId(@PathVariable Long developerId) {
+    public ResponseEntity<List<TaskDTO>> getTasksByDeveloper(@PathVariable Long developerId) {
         return ResponseEntity.ok(taskService.getTasksByDeveloperId(developerId));
     }
 
@@ -59,12 +58,13 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO dto) throws Exception {
-        return ResponseEntity.ok(taskService.createTask(dto));
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody TaskDTO dto) {
+        TaskDTO created = taskService.createTask(dto);
+        return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO dto) throws Exception {
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO dto) {
         return ResponseEntity.ok(taskService.updateTask(id, dto));
     }
 
@@ -79,5 +79,3 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTaskCountsByStatus());
     }
 }
-
-
